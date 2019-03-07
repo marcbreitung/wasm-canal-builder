@@ -2,7 +2,7 @@ extern crate cfg_if;
 extern crate wasm_bindgen;
 
 mod utils;
-pub mod tile;
+pub mod block;
 pub mod map;
 
 use cfg_if::cfg_if;
