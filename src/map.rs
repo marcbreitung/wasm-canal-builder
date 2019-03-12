@@ -30,7 +30,7 @@ impl Map {
         let mut index = self.get_index(row, column);
 
         for (i, block) in blocks.iter().enumerate() {
-            if (i as u32 % block_size) == 0 && (i as u32 % block_size) + i as u32 != 0 {
+            if i != 0 && i as u32 % block_size == 0 {
                 row = row + 1;
                 column = column - block_size;
                 index = self.get_index(row, column);
