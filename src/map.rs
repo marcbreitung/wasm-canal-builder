@@ -2,12 +2,15 @@ extern crate wasm_bindgen;
 
 use wasm_bindgen::prelude::*;
 use crate::block::Block;
+use crate::search::State;
+use crate::search::Search;
 
 #[wasm_bindgen]
 pub struct Map {
     width: u32,
     height: u32,
     tiles: Vec<Block>,
+    path: Vec<u32>,
 }
 
 #[wasm_bindgen]
@@ -15,10 +18,12 @@ impl Map {
     pub fn new(width: u32, height: u32) -> Map {
         let size: usize = (width * height) as usize;
         let tiles = vec![Block::Empty; size];
+        let path = vec![];
         Map {
             width,
             height,
             tiles,
+            path,
         }
     }
 
@@ -41,6 +46,15 @@ impl Map {
 
     pub fn tiles(&self) -> *const Block {
         self.tiles.as_ptr()
+    }
+
+    pub fn path(&mut self) -> *const u32 {
+        let start: State = State::new(0, 0);
+        let goal: State = State::new(2, 2);
+        let size = (self.width.clone(), self.height.clone());
+        let mut search = Search::new(self.tiles.clone(), start, goal, size.0, size.1);
+        self.path = search.search();
+        self.path.as_ptr()
     }
 
     fn get_index(&self, row: u32, column: u32) -> usize {

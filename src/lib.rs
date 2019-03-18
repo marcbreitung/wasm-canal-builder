@@ -4,6 +4,7 @@ extern crate wasm_bindgen;
 mod utils;
 pub mod block;
 pub mod map;
+pub mod search;
 
 use cfg_if::cfg_if;
 

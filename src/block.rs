@@ -19,4 +19,12 @@ impl Block {
             _ => Block::Empty,
         }
     }
+
+    pub fn from_array(i: Vec<u8>) -> Vec<Block> {
+        let mut blocks: Vec<Block> = vec![];
+        for block in i.iter().cloned() {
+            blocks.push(Block::from(block))
+        }
+        blocks
+    }
 }
