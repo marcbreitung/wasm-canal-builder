@@ -49,8 +49,8 @@ impl Map {
     }
 
     pub fn path(&mut self) -> *const u32 {
-        let start: State = State::new(0, 0);
-        let goal: State = State::new(2, 2);
+        let start: State = State::new(1, 1);
+        let goal: State = State::new(4, 1);
         let size = (self.width.clone(), self.height.clone());
         let mut search = Search::new(self.tiles.clone(), start, goal, size.0, size.1);
         self.path = search.search();

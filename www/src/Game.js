@@ -53,7 +53,13 @@ export class Game {
             let col = document.getElementById('col').value;
             this.map.add_tile_at_position(blocks, row, col);
             this.draw();
+            this.getPath();
         })
+    }
+
+    getPath() {
+        let path = new Uint32Array(memory.buffer, this.map.path(), 20);
+        console.log(path);
     }
 
     drawGrid() {
