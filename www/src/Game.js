@@ -1,4 +1,4 @@
-import {Map, Block} from "wasm-canal-builder";
+import {Map} from "wasm-canal-builder";
 import {memory} from "wasm-canal-builder/wasm_canal_builder_bg";
 
 export class Game {
@@ -58,7 +58,7 @@ export class Game {
     }
 
     getPath() {
-        let path = new Uint32Array(memory.buffer, this.map.path(), 20);
+        let path = new Uint8Array(memory.buffer, this.map.path(), this.config.width * this.config.height);
         console.log(path);
     }
 
@@ -80,9 +80,9 @@ export class Game {
     }
 
     drawBlocks() {
-        this.drawBlockOfTypeWithColor(Block.Empty, this.config.color.empty);
-        this.drawBlockOfTypeWithColor(Block.Path, this.config.color.path);
-        this.drawBlockOfTypeWithColor(Block.Ground, this.config.color.ground);
+        this.drawBlockOfTypeWithColor(0, this.config.color.empty);
+        this.drawBlockOfTypeWithColor(1, this.config.color.path);
+        this.drawBlockOfTypeWithColor(2, this.config.color.ground);
     }
 
     drawBlockOfTypeWithColor(type, color) {
