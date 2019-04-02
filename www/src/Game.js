@@ -18,6 +18,12 @@ export class Game {
         };
         this.ctx = null;
 
+        this.start = null;
+        this.goal = null;
+
+        this.col = 0;
+        this.row = 0;
+
         this.initMap();
         this.initCanvas();
         this.initEvents();
@@ -27,6 +33,7 @@ export class Game {
     draw() {
         this.drawGrid();
         this.drawBlocks();
+        this.drawOutline();
     }
 
     initMap() {
@@ -39,6 +46,16 @@ export class Game {
         canvas.height = (this.config.cellSize + 1) * this.config.height + 1;
         canvas.width = (this.config.cellSize + 1) * this.config.width + 1;
         this.ctx = canvas.getContext('2d');
+        canvas.addEventListener('click', (event) => {
+            let column = Math.floor((event.clientX - event.target.offsetLeft) / (this.config.cellSize + 1));
+            let row = Math.floor((event.clientY - event.target.offsetTop) / (this.config.cellSize + 1));
+            if (this.start === null && this.goal === null) {
+                this.start = {column: Math.max(0, column), row: Math.max(0, row)};
+            } else {
+                this.goal = {column: Math.max(0, column), row: Math.max(0, row)};
+                this.getPath();
+            }
+        });
     }
 
     initEvents() {
@@ -53,13 +70,25 @@ export class Game {
             let col = document.getElementById('col').value;
             this.map.add_tile_at_position(blocks, row, col);
             this.draw();
-            this.getPath();
-        })
+        });
+
+        document.getElementById('row').addEventListener('change', (event) => {
+            this.row = event.target.value;
+            this.draw();
+        });
+
+        document.getElementById('col').addEventListener('change', (event) => {
+            this.col = event.target.value;
+            this.draw();
+        });
     }
 
     getPath() {
-        let path = new Uint8Array(memory.buffer, this.map.path(), this.config.width * this.config.height);
-        console.log(path);
+        let path = new Uint8Array(memory.buffer, this.map.path(this.start.row, this.start.column, this.goal.row, this.goal.column), this.config.width * this.config.height);
+        this.drawBlocks();
+        this.drawPath(path, "#0071ff");
+        this.start = null;
+        this.goal = null;
     }
 
     drawGrid() {
@@ -103,6 +132,35 @@ export class Game {
             }
         }
         this.ctx.stroke();
+    }
+
+    drawPath(path, color) {
+        this.ctx.beginPath();
+        this.ctx.fillStyle = color;
+        for (let row = 0; row < this.config.height; row++) {
+            for (let col = 0; col < this.config.width; col++) {
+                const idx = this.getIndex(row, col);
+                if (path[idx] !== 1) {
+                    continue;
+                }
+                this.ctx.fillRect(
+                    col * (this.config.cellSize + 1) + 1,
+                    row * (this.config.cellSize + 1) + 1,
+                    this.config.cellSize,
+                    this.config.cellSize
+                );
+            }
+        }
+        this.ctx.stroke();
+    }
+
+    drawOutline() {
+        let rectSize = (this.config.cellSize * 3) + 3;
+        this.ctx.beginPath();
+        this.ctx.globalAlpha = 0.5;
+        this.ctx.fillStyle = "#b63443";
+        this.ctx.fillRect(rectSize * this.col, rectSize * this.row, rectSize, rectSize);
+        this.ctx.globalAlpha = 1.0;
     }
 
     getIndex(row, column) {

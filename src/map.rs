@@ -46,10 +46,10 @@ impl Map {
         self.tiles.as_ptr()
     }
 
-    pub fn path(&mut self) -> *const u8 {
+    pub fn path(&mut self, start_row: u32, start_column: u32, goal_row: u32, goal_column: u32) -> *const u8 {
         let nodes = self.tiles.clone();
-        let start = search::state::State::new(1, 1);
-        let goal = search::state::State::new(2, 2);
+        let start = search::state::State::new(start_row, start_column);
+        let goal = search::state::State::new(goal_row, goal_column);
         let graph = search::graph::Graph::new(nodes, self.width.clone(), self.height.clone());
         let problem = search::problem::Problem::new(start, goal, graph);
         let mut breath_first_search = search::breath_first_search::BreathFirstSearch::new();
