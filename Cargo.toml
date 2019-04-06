@@ -1,6 +1,6 @@
 [package]
 name = "wasm-canal-builder"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Marc Breitung <info@marcbreitung.de>"]
 
 [lib]

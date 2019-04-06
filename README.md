@@ -11,3 +11,5 @@ Run the Docker container:
 ```` bash
 docker run -p 8080:8080 -it --rm  -e USER='User Name'  -v "$PWD":/app --name wasm-package rust-wasm:latest /bin/bash
 ````
+
+
