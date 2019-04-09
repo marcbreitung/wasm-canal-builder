@@ -47,28 +47,33 @@ impl Map {
     }
 
     pub fn path(&mut self, start_row: u32, start_column: u32, goal_row: u32, goal_column: u32) -> *const u8 {
-        self.update_path(start_row, start_column, goal_row, goal_column);
+        let path = self.update_path(start_row, start_column, goal_row, goal_column);
+
+        match path {
+            search::breath_first_search::Solution::Path(p) => {
+                self.path = p;
+            }
+            search::breath_first_search::Solution::Closest(s) => {
+                let closest_path = self.update_path(start_row, start_column, s.row, s.column);
+                if let search::breath_first_search::Solution::Path(p) = closest_path {
+                    self.path = p;
+                }
+            }
+            _ => {}
+        }
+
         self.path.as_ptr()
     }
 
-    fn update_path(&mut self, start_row: u32, start_column: u32, goal_row: u32, goal_column: u32) {
-        let nodes = self.tiles.clone();
+    fn update_path(&mut self, start_row: u32, start_column: u32, goal_row: u32, goal_column: u32) -> search::breath_first_search::Solution {
         let start = search::state::State::new(start_row, start_column);
         let goal = search::state::State::new(goal_row, goal_column);
-        let graph = search::graph::Graph::new(nodes, self.width.clone(), self.height.clone());
-        let problem = search::problem::Problem::new(start, goal, graph);
-        let mut breath_first_search = search::breath_first_search::BreathFirstSearch::new();
-        let solution = breath_first_search.search_vec(&problem);
 
-        match solution {
-            Some(path) => {
-                self.path = path;
-            }
-            None => {
-                let goal = problem.get_closest();
-                self.update_path(start_row, start_column, goal.row, goal.column)
-            }
-        }
+        let graph = search::graph::Graph::new(self.tiles.clone(), self.width.clone(), self.height.clone());
+        let problem = search::problem::Problem::new(start, goal, graph);
+
+        let mut breath_first_search = search::breath_first_search::BreathFirstSearch::new();
+        breath_first_search.search_vec(&problem)
     }
 
     fn get_index(&self, row: u32, column: u32) -> usize {

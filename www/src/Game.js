@@ -27,6 +27,8 @@ export class Game {
         this.initMap();
         this.initCanvas();
         this.initEvents();
+        this.addStart();
+        this.addGoal();
         this.draw();
     }
 
@@ -70,6 +72,7 @@ export class Game {
             let col = document.getElementById('col').value;
             this.map.add_tile_at_position(blocks, row, col);
             this.draw();
+            this.getPath();
         });
 
         document.getElementById('row').addEventListener('change', (event) => {
@@ -83,12 +86,21 @@ export class Game {
         });
     }
 
+    addStart() {
+        this.map.add_tile_at_position([2, 2, 2, 2, 1, 2, 2, 1, 2], 0, 0);
+        this.start = {column: 1, row: 1};
+    }
+
+    addGoal() {
+        this.map.add_tile_at_position([2, 1, 2, 2, 1, 2, 2, 2, 2], 5, 5);
+        this.goal = {column: 16, row: 16};
+    }
+
     getPath() {
+        console.log(this.start, this.goal);
         let path = new Uint8Array(memory.buffer, this.map.path(this.start.row, this.start.column, this.goal.row, this.goal.column), this.config.width * this.config.height);
         this.drawBlocks();
         this.drawPath(path, "#0071ff");
-        this.start = null;
-        this.goal = null;
     }
 
     drawGrid() {
